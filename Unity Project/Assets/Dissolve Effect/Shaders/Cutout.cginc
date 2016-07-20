@@ -1,3 +1,4 @@
+
 #include "Noise Shaders/SimplexNoise3D.cginc"
 
 int	_NumFrequencies;
@@ -9,6 +10,8 @@ float _DistanceThreshold;
 
 float3 _EdgeColor;
 float4 _StartEffectPos;
+
+sampler2D _RandomTexture;
 
 float hash(float n)
 { 
@@ -32,17 +35,39 @@ float noise(float3 x)
 					  lerp(hash(n + 270.0), hash(n + 271.0), f.x), f.y), f.z);
 }
 
+float fastnoise(float3 x)
+{
+	float3 p = floor(x);
+	float3 f = frac(x);
+	f = f*f*(3.0 - 2.0*f);
+
+	float2 uv = (p.xy + float2(37.0, 17.0)*p.z) + f.xy;
+	uv = (uv + 0.5) / 256.0;
+	uv.y = 1 - uv.y;
+	float2 rg = tex2Dbias(_RandomTexture, float4(uv,0,-100)).yx;
+	//float2 rg = tex2D(_RandomTexture, (uv + 0.5) / 256.0).yx;
+	return lerp(rg.x, rg.y, f.z);
+}
+
 float getNoiseCheap(float3 pos)
 {
-	float3 q = 1.5 * pos;
+	float3 q = 8 * pos;
 
-	float f = 0.5000*noise(q);
-	q = mul(mm, q )* 2.01;	
+	//float f = 0.5000*noise(q);
+	/*q = mul(mm, q )* 2.01;	
 	f += 0.2500*noise(q);
 	q = mul(mm, q )* 2.02;
 	f += 0.1250*noise(q); 
 	q = mul(mm, q )* 2.03;
-	f += 0.0625*noise(q); 
+	f += 0.0625*noise(q); */
+
+	float f = 0.5000*fastnoise(q);
+	q = mul(mm, q)* 2.01;
+	f += 0.2500*fastnoise(q);
+	q = mul(mm, q)* 2.02;
+	f += 0.1250*fastnoise(q);
+	q = mul(mm, q)* 2.03;
+	f += 0.0625*fastnoise(q);
 
 	return f;
 }

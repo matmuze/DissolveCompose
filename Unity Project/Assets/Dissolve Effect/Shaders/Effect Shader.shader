@@ -45,23 +45,29 @@
 
 			float4 frag(v2f_img i) : COLOR
 			{
+				//float4 cccc = tex2Dbias(_RandomTexture, float4(i.uv, 0, -1000));
+				//float4 cccc = tex2Dlod(_RandomTexture, float4(i.uv, 0, 3));
+				//return cccc;
+
 				float srcDepth = tex2D(_SrcDepthTexture, i.uv);
 				float4 srcColor = tex2D(_SrcColorTexture, i.uv);
 
 				float dstDepth = tex2D(_DstDepthTexture, i.uv);
 				float4 dstColor = tex2D(_DstColorTexture, i.uv);
 
-				if (srcDepth == dstDepth && srcDepth == 1) discard;
+				if (srcDepth == dstDepth && srcDepth == 1) return float4(1,1,1,1);
 
 				//******** src *********//
-				float4 srcWorldPos = getWorldPos(srcDepth, i.uv);				
-				float srcNoise = getNoise(srcWorldPos.xyz);
+				float4 srcWorldPos = getWorldPos(srcDepth, i.uv);	
+				float srcNoise = getNoiseCheap(srcWorldPos.xyz);				
 				float srcDist = distance(_StartEffectPos.xyz, srcWorldPos.xyz);
 				float srcThreshold = saturate((_DistanceThreshold - srcDist) * (1 / _FringeSize));	
 
+				return srcNoise;
+
 				//******** dst *********//				
 				float4 dstWorldPos = getWorldPos(dstDepth, i.uv);
-				float dstNoise = getNoise(dstWorldPos.xyz);
+				float dstNoise = getNoiseCheap(dstWorldPos.xyz);
 				float dstDist = distance(_StartEffectPos.xyz, dstWorldPos.xyz);
 				float dstThreshold = saturate((_DistanceThreshold - dstDist) * (1 / _FringeSize));				
 								

@@ -31,6 +31,8 @@ public class DepthEffect : MonoBehaviour
     public Vector3 StartEffectPos;
     public Color EdgeColor;
 
+    public Texture2D RandomTexture;
+
     public LayerMask SourceLayerMask;
     public LayerMask DestinationLayerMask;
 
@@ -128,15 +130,13 @@ public class DepthEffect : MonoBehaviour
 
         // Set cutout shader properties
 
-        Shader.SetGlobalInt("_NumFrequencies", _NumFrequencies);
-
-        Shader.SetGlobalFloat("_EdgeWidth", _EdgeWidth);
-        Shader.SetGlobalFloat("_FringeSize", _FringeSize);
-        Shader.SetGlobalFloat("_NoiseScale", _NoiseScale);
-        Shader.SetGlobalFloat("_DistanceThreshold", DistanceThreshold);
-
-        Shader.SetGlobalVector("_EdgeColor", EdgeColor);
-        Shader.SetGlobalVector("_StartEffectPos", StartEffectPos);
+        //Shader.SetGlobalInt("_NumFrequencies", _NumFrequencies);
+        //Shader.SetGlobalFloat("_EdgeWidth", _EdgeWidth);
+        //Shader.SetGlobalFloat("_FringeSize", _FringeSize);
+        //Shader.SetGlobalFloat("_NoiseScale", _NoiseScale);
+        //Shader.SetGlobalFloat("_DistanceThreshold", DistanceThreshold);
+        //Shader.SetGlobalVector("_EdgeColor", EdgeColor);
+        //Shader.SetGlobalVector("_StartEffectPos", StartEffectPos);
 
         //**************** Source *********************//
         
@@ -242,7 +242,8 @@ public class DepthEffect : MonoBehaviour
         EffectMaterial.SetFloat("_DistanceThreshold", DistanceThreshold);
         EffectMaterial.SetVector("_StartEffectPos", StartEffectPos);
         EffectMaterial.SetMatrix("_InverseView", GetComponent<Camera>().cameraToWorldMatrix);
-
+        
+        EffectMaterial.SetTexture("_RandomTexture", RandomTexture);
         EffectMaterial.SetTexture("_SrcColorTexture", srcColorTexture);
         EffectMaterial.SetTexture("_SrcDepthTexture", srcDepthTexture);
         EffectMaterial.SetTexture("_DstColorTexture", dstColorTexture);
